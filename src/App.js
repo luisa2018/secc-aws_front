@@ -1,23 +1,83 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Formulario from './components/Formulario';
+import Informe from './components/Informe';
+
+function LogoSECC({ color = 'white', size = 44 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="19" cy="19" r="14" stroke={color} strokeWidth="3" fill="none"/>
+      <line x1="29" y1="29" x2="41" y2="41" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <text x="19" y="23" textAnchor="middle" fill={color} fontSize="9" fontWeight="bold" fontFamily="Segoe UI, sans-serif">SECC</text>
+    </svg>
+  );
+}
 
 function App() {
+  const [pantalla, setPantalla] = useState('formulario');
+  const [informe, setInforme] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleEstimar = async (datos) => {
+    setCargando(true);
+    setError(null);
+    try {
+      const response = await fetch('http://localhost:5000/estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al estimar');
+      setInforme(result);
+      setPantalla('informe');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const handleNuevaEstimacion = () => {
+    setInforme(null);
+    setError(null);
+    setPantalla('formulario');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="app">
+      <header className="app-header">
+        <div className="header-content">
+          <LogoSECC color="#28A349" size={52} />
+          <div className="header-titles">
+            <h1>SECC</h1>
+            <span className="header-sub">Evalúa tus costos en Cloud</span>
+          </div>
+        </div>
       </header>
+
+      <main className="app-main">
+        {pantalla === 'formulario' && (
+          <Formulario
+            onEstimar={handleEstimar}
+            cargando={cargando}
+            error={error}
+            LogoSECC={LogoSECC}
+          />
+        )}
+        {pantalla === 'informe' && (
+          <Informe
+            informe={informe}
+            onNuevaEstimacion={handleNuevaEstimacion}
+            LogoSECC={LogoSECC}
+          />
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>© 2026 SECC — Sistema de Estimación de Costos en Cloud</p>
+      </footer>
     </div>
   );
 }
