@@ -3,6 +3,9 @@ import './App.css';
 import Formulario from './components/Formulario';
 import Informe from './components/Informe';
 
+const ESTIMATE_URL = process.env.REACT_APP_ESTIMATE_URL || 'http://localhost:5000/estimate';
+const REPORT_URL = process.env.REACT_APP_REPORT_URL || 'http://localhost:5000/report';
+
 function LogoSECC({ color = 'white', size = 44 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -23,7 +26,7 @@ function App() {
     setCargando(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/estimate', {
+      const response = await fetch(ESTIMATE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos)
@@ -33,7 +36,9 @@ function App() {
       setInforme(result);
       setPantalla('informe');
     } catch (err) {
-      setError(err.message);
+      setError(err.message === 'Failed to fetch'
+        ? 'No se pudo conectar con el servidor. Asegurate de que el sistema este activo e intenta nuevamente.'
+        : err.message);
     } finally {
       setCargando(false);
     }
@@ -49,10 +54,10 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <LogoSECC color="#28A349" size={52} />
+          <LogoSECC color="#1E7C3A" size={52} />
           <div className="header-titles">
             <h1>SECC</h1>
-            <span className="header-sub">Evalúa tus costos en Cloud</span>
+            <span className="header-sub">Sistema de Evaluación de Costos en AWS</span>
           </div>
         </div>
       </header>
@@ -70,6 +75,7 @@ function App() {
           <Informe
             informe={informe}
             onNuevaEstimacion={handleNuevaEstimacion}
+            reportUrl={REPORT_URL}
             LogoSECC={LogoSECC}
           />
         )}

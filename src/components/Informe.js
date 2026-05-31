@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function Badge({ texto, tipo }) {
   const colores = {
@@ -18,6 +18,34 @@ function Badge({ texto, tipo }) {
   );
 }
 
+function SeccionColapsable({ titulo, children, defaultAbierto = false }) {
+  const [abierto, setAbierto] = useState(defaultAbierto);
+  return (
+    <div className="card" style={{ marginBottom: '1.5rem' }}>
+      <div
+        onClick={() => setAbierto(!abierto)}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          cursor: 'pointer',
+          paddingBottom: abierto ? '0.75rem' : 0,
+          borderBottom: abierto ? '2px solid #F0B429' : 'none',
+          marginBottom: abierto ? '1rem' : 0
+        }}
+      >
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#9A7209', margin: 0 }}>
+          {titulo}
+        </h3>
+        <span style={{ fontSize: '1.1rem', color: '#9A7209', fontWeight: 700 }}>
+          {abierto ? '▲' : '▼'}
+        </span>
+      </div>
+      {abierto && children}
+    </div>
+  );
+}
+
 function SeccionTitle({ children }) {
   return (
     <h3 style={{
@@ -31,7 +59,9 @@ function SeccionTitle({ children }) {
   );
 }
 
-export default function Informe({ informe, onNuevaEstimacion }) {
+export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
+  const [descargando, setDescargando] = useState(false);
+  const [errorPdf, setErrorPdf] = useState('');
   if (!informe) return null;
 
   const { metadata, servicios, costo_estimado, evaluacion_presupuesto,
@@ -41,6 +71,37 @@ export default function Informe({ informe, onNuevaEstimacion }) {
 
   const riesgoColor = {
     'Bajo': 'ok', 'Medio': 'warn', 'Alto': 'error'
+  };
+
+  const handleDescargarPDF = async () => {
+    setDescargando(true);
+    setErrorPdf('');
+    try {
+      const res = await fetch(reportUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/pdf'
+        },
+        body: JSON.stringify({ estimacion: informe }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Error generando el PDF');
+      }
+      const blob = await res.blob();
+      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'informe_secc_aws.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setErrorPdf(e.message);
+    } finally {
+      setDescargando(false);
+    }
   };
 
   return (
@@ -55,11 +116,6 @@ export default function Informe({ informe, onNuevaEstimacion }) {
           <p style={{ color: '#555', fontSize: '0.9rem', marginTop: '4px' }}>
             Escenario: <strong>{metadata?.escenario}</strong> · Generado: {metadata?.fecha_ejecucion?.slice(0, 10)}
           </p>
-        </div>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button className="btn-primary" onClick={onNuevaEstimacion}>
-            + Nueva estimación
-          </button>
         </div>
       </div>
 
@@ -80,13 +136,13 @@ export default function Informe({ informe, onNuevaEstimacion }) {
         ))}
       </div>
 
-      {/* Resumen ejecutivo */}
+      {/* Resumen ejecutivo — siempre visible */}
       <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #C8960C' }}>
         <SeccionTitle>Resumen ejecutivo</SeccionTitle>
         <p style={{ fontSize: '0.9rem', color: '#444', lineHeight: 1.7 }}>{resumen}</p>
       </div>
 
-      {/* Top 3 servicios */}
+      {/* Top 3 servicios — siempre visible */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
         <SeccionTitle>Top 3 servicios de mayor costo</SeccionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
@@ -102,9 +158,8 @@ export default function Informe({ informe, onNuevaEstimacion }) {
         </div>
       </div>
 
-      {/* Servicios propuestos */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <SeccionTitle>Servicios propuestos ({servicios?.length} servicios)</SeccionTitle>
+      {/* Servicios propuestos — COLAPSABLE */}
+      <SeccionColapsable titulo={`Servicios propuestos (${servicios?.length} servicios)`}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
@@ -127,9 +182,9 @@ export default function Informe({ informe, onNuevaEstimacion }) {
             </tbody>
           </table>
         </div>
-      </div>
+      </SeccionColapsable>
 
-      {/* Well-Architected */}
+      {/* Well-Architected — siempre visible */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
         <SeccionTitle>AWS Well-Architected — Optimización de costos</SeccionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
@@ -148,31 +203,31 @@ export default function Informe({ informe, onNuevaEstimacion }) {
         <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}><strong>Recomendación:</strong> {well_architected?.recomendacion}</p>
       </div>
 
-      {/* Modelo pricing y región */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
-        <div className="card">
-          <SeccionTitle>Modelo de pricing recomendado</SeccionTitle>
-          {modelo_pricing?.map((m, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid #EEE', gap: '8px' }}>
-              <div>
-                <p style={{ fontWeight: 600, fontSize: '0.85rem' }}>{m.servicio_aws}</p>
-                <p style={{ fontSize: '0.75rem', color: '#777' }}>{m.justificacion}</p>
+      {/* Modelo pricing y región — COLAPSABLE */}
+      <SeccionColapsable titulo="Modelo de pricing recomendado">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div>
+            {modelo_pricing?.map((m, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid #EEE', gap: '8px' }}>
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: '0.85rem' }}>{m.servicio_aws}</p>
+                  <p style={{ fontSize: '0.75rem', color: '#777' }}>{m.justificacion}</p>
+                </div>
+                <Badge texto={m.modelo_recomendado} tipo={m.modelo_recomendado === 'On-Demand' ? 'info' : 'ok'} />
               </div>
-              <Badge texto={m.modelo_recomendado} tipo={m.modelo_recomendado === 'On-Demand' ? 'info' : 'ok'} />
-            </div>
-          ))}
-        </div>
-
-        <div className="card">
-          <SeccionTitle>Región recomendada</SeccionTitle>
-          <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '1rem', marginBottom: '1rem' }}>
-            <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209' }}>{region_recomendada?.region}</p>
+            ))}
           </div>
-          <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>{region_recomendada?.justificacion}</p>
+          <div>
+            <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Región recomendada</p>
+            <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '1rem', marginBottom: '0.75rem' }}>
+              <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209' }}>{region_recomendada?.region}</p>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>{region_recomendada?.justificacion}</p>
+          </div>
         </div>
-      </div>
+      </SeccionColapsable>
 
-      {/* Alternativa menor costo */}
+      {/* Alternativa menor costo — siempre visible */}
       {alternativa_menor_costo?.aplica && (
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1E7C3A' }}>
           <SeccionTitle>Alternativa de menor costo</SeccionTitle>
@@ -181,7 +236,7 @@ export default function Informe({ informe, onNuevaEstimacion }) {
         </div>
       )}
 
-      {/* Análisis de migración */}
+      {/* Análisis de migración — siempre visible */}
       {analisis_migracion?.aplica && (
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1565C0' }}>
           <SeccionTitle>Análisis de migración</SeccionTitle>
@@ -200,9 +255,8 @@ export default function Informe({ informe, onNuevaEstimacion }) {
         </div>
       )}
 
-      {/* Buenas prácticas */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <SeccionTitle>Buenas prácticas de gestión de costos</SeccionTitle>
+      {/* Buenas prácticas — COLAPSABLE */}
+      <SeccionColapsable titulo="Buenas prácticas de gestión de costos">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
           <div>
             <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Etiquetado recomendado</p>
@@ -226,23 +280,35 @@ export default function Informe({ informe, onNuevaEstimacion }) {
             </div>
           </div>
         </div>
-      </div>
+      </SeccionColapsable>
 
-      {/* Limitaciones */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <SeccionTitle>Limitaciones del estimado</SeccionTitle>
+      {/* Limitaciones — COLAPSABLE */}
+      <SeccionColapsable titulo="Limitaciones del estimado">
         <ul style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {limitaciones_estimado?.map((l, i) => (
             <li key={i} style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.5 }}>{l}</li>
           ))}
         </ul>
-      </div>
+      </SeccionColapsable>
 
       {/* Acciones finales */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem', paddingBottom: '2rem' }}>
-        <button className="btn-primary btn-large" onClick={onNuevaEstimacion}>
-          + Nueva estimación
-        </button>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', marginTop: '2rem', paddingBottom: '2rem' }}>
+        {errorPdf && (
+          <div className="error-box">⚠️ {errorPdf}</div>
+        )}
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button className="btn-secondary btn-large" onClick={onNuevaEstimacion}>
+            + Nueva evaluación
+          </button>
+          <button
+            className="btn-primary btn-large"
+            onClick={handleDescargarPDF}
+            disabled={descargando}
+            style={{ opacity: descargando ? 0.7 : 1 }}
+          >
+            {descargando ? '⏳ Generando PDF...' : '⬇ Descargar PDF'}
+          </button>
+        </div>
       </div>
 
     </div>
