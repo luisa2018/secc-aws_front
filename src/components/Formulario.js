@@ -120,15 +120,15 @@ const REFERENCIAS = {
 };
 
 const CAMPOS_ARQUITECTURA = [
-  { name: 'patron_despliegue', label: 'Patrón de despliegue' },
-  { name: 'usuarios_concurrentes', label: 'Usuarios concurrentes' },
-  { name: 'tipo_base_datos', label: 'Tipo de base de datos' },
-  { name: 'volumen_datos_inicial', label: 'Volumen de datos inicial' },
-  { name: 'intensidad_procesamiento', label: 'Intensidad de procesamiento' },
-  { name: 'cumplimiento', label: 'Cumplimiento requerido' },
-  { name: 'transferencia_mensual', label: 'Transferencia mensual' },
-  { name: 'sla_objetivo', label: 'SLA objetivo' },
-  { name: 'almacenamiento_archivos', label: 'Almacenamiento de archivos' }
+  { name: 'patron_despliegue', label: 'Patrón de Despliegue' },
+  { name: 'usuarios_concurrentes', label: 'Usuarios Concurrentes' },
+  { name: 'tipo_base_datos', label: 'Tipo de Base de Datos' },
+  { name: 'volumen_datos_inicial', label: 'Volumen de Datos Inicial' },
+  { name: 'intensidad_procesamiento', label: 'Intensidad de Procesamiento' },
+  { name: 'cumplimiento', label: 'Cumplimiento Requerido' },
+  { name: 'transferencia_mensual', label: 'Transferencia Mensual' },
+  { name: 'sla_objetivo', label: 'SLA Objetivo' },
+  { name: 'almacenamiento_archivos', label: 'Almacenamiento de Archivos' }
 ];
 
 function TooltipInfo({ texto }) {
@@ -184,7 +184,8 @@ function TarjetaEstilo({ info, seleccionado, onSeleccionar }) {
         background: seleccionado ? '#E8F5E9' : '#FAFAFA',
         textAlign: 'center',
         transition: 'all 0.2s',
-        boxShadow: seleccionado ? '0 2px 8px rgba(30,124,58,0.15)' : 'none'
+        boxShadow: seleccionado ? '0 2px 8px rgba(30,124,58,0.15)' : 'none',
+        overflow: 'visible'
       }}
       onClick={() => onSeleccionar(info.key)}
       onMouseEnter={() => setTooltip(true)}
@@ -295,7 +296,6 @@ export default function Formulario({ onEstimar, cargando, error }) {
     onEstimar(datos);
   };
 
-  // Pantalla de bienvenida
   if (pantalla === 'bienvenida') {
     return (
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -323,7 +323,12 @@ export default function Formulario({ onEstimar, cargando, error }) {
           <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '1.5rem', fontStyle: 'italic' }}>
             Pasa el mouse por cada opción para ver una descripción.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '1rem',
+            overflow: 'visible'
+          }}>
             {ESTILOS_INFO.map(info => (
               <TarjetaEstilo
                 key={info.key}
@@ -338,7 +343,6 @@ export default function Formulario({ onEstimar, cargando, error }) {
     );
   }
 
-  // Pantalla de formulario
   const estiloInfo = ESTILOS_INFO.find(e => e.key === form.estilo_arquitectura);
   const { Icono: IconoSeleccionado } = estiloInfo || {};
 
@@ -362,9 +366,9 @@ export default function Formulario({ onEstimar, cargando, error }) {
 
       <form onSubmit={handleSubmit}>
         <div className="card" style={{ marginBottom: '1.5rem' }}>
-          <h3 className="seccion-title">Descripción de la arquitectura</h3>
+          <h3 className="seccion-title">Descripción de la Arquitectura</h3>
           <div className="form-group">
-            <label className="form-label">Descripción del sistema</label>
+            <label className="form-label">Descripción del Sistema</label>
             <textarea
               className="form-textarea"
               name="descripcion"
@@ -377,16 +381,16 @@ export default function Formulario({ onEstimar, cargando, error }) {
         </div>
 
         <div className="card" style={{ marginBottom: '1.5rem' }}>
-          <h3 className="seccion-title">Contexto de evaluación</h3>
+          <h3 className="seccion-title">Contexto de Evaluación</h3>
           <div className="form-grid">
-            <Select label="Horizonte de tiempo" name="horizonte_tiempo" value={form.horizonte_tiempo} onChange={handleChange} options={HORIZONTES} tooltip={TOOLTIPS_CONTEXTO.horizonte_tiempo} />
+            <Select label="Horizonte de Tiempo" name="horizonte_tiempo" value={form.horizonte_tiempo} onChange={handleChange} options={HORIZONTES} tooltip={TOOLTIPS_CONTEXTO.horizonte_tiempo} />
             <Select label="Ambiente" name="ambiente" value={form.ambiente} onChange={handleChange} options={AMBIENTES} tooltip={TOOLTIPS_CONTEXTO.ambiente} />
-            <Select label="Ubicación de usuarios" name="ubicacion_usuarios" value={form.ubicacion_usuarios} onChange={handleChange} options={UBICACIONES} tooltip={TOOLTIPS_CONTEXTO.ubicacion_usuarios} />
+            <Select label="Ubicación de Usuarios" name="ubicacion_usuarios" value={form.ubicacion_usuarios} onChange={handleChange} options={UBICACIONES} tooltip={TOOLTIPS_CONTEXTO.ubicacion_usuarios} />
             <Select label="Tipo de IA" name="ia_tipo" value={form.ia_tipo} onChange={handleChange} options={IA_TIPOS} tooltip={TOOLTIPS_CONTEXTO.ia_tipo} />
-            <Select label="Plazo de compromiso" name="plazo_compromiso" value={form.plazo_compromiso} onChange={handleChange} options={PLAZOS_COMPROMISO} tooltip={TOOLTIPS_CONTEXTO.plazo_compromiso} />
+            <Select label="Plazo de Compromiso" name="plazo_compromiso" value={form.plazo_compromiso} onChange={handleChange} options={PLAZOS_COMPROMISO} tooltip={TOOLTIPS_CONTEXTO.plazo_compromiso} />
             <div className="form-group">
               <label className="form-label">
-                Presupuesto disponible (USD)
+                Presupuesto Disponible (USD)
                 <TooltipInfo texto={TOOLTIPS_CONTEXTO.presupuesto} />
               </label>
               <input
@@ -403,7 +407,7 @@ export default function Formulario({ onEstimar, cargando, error }) {
         </div>
 
         <div className="card" style={{ marginBottom: '1.5rem' }}>
-          <h3 className="seccion-title">Parámetros de arquitectura</h3>
+          <h3 className="seccion-title">Parámetros de Arquitectura</h3>
           <p style={{ fontSize: '0.85rem', color: '#9A7209', marginBottom: '1rem', fontStyle: 'italic' }}>
             💡 Los valores sugeridos son referencias para arquitectura <strong>{estiloInfo?.label}</strong>. Puedes ajustarlos libremente.
           </p>
