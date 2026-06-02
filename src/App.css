@@ -297,7 +297,7 @@ body {
   letter-spacing: 0.03em;
 }
 
-/* TOOLTIP */
+/* TOOLTIP — tarjetas de arquitectura */
 .tooltip {
   position: absolute;
   bottom: calc(100% + 10px);
@@ -342,4 +342,59 @@ body {
 
 .btn-volver:hover {
   background: var(--verde-hover);
+}
+
+/* TOOLTIP INFO — campos del formulario */
+.tooltip-info-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.tooltip-info-trigger {
+  cursor: help;
+  color: var(--dorado-oscuro);
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: #FFF8E1;
+  border: 1px solid var(--dorado-claro);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.tooltip-info-box {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gris-claro);
+  color: #444;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  width: 240px;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid var(--gris);
+  text-align: left;
+  pointer-events: none;
+  font-weight: 400;
+}
+
+.tooltip-info-arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 7px;
+  border-style: solid;
+  border-color: var(--gris-claro) transparent transparent transparent;
+  filter: drop-shadow(0 1px 0 var(--gris));
 }

@@ -7,6 +7,27 @@ const UBICACIONES = ['latinoamerica', 'estados_unidos', 'europa', 'global'];
 const IA_TIPOS = ['ninguna', 'apis_externas', 'propia'];
 const PLAZOS_COMPROMISO = ['sin_compromiso', '1_año', '3_años'];
 
+const TOOLTIPS_CONTEXTO = {
+  horizonte_tiempo: '¿Por cuánto tiempo quieres proyectar los costos? Mensual = 1 mes, Trimestral = 3 meses, Anual = 12 meses.',
+  ambiente: '¿En qué etapa está tu proyecto? Desarrollo = pruebas internas, Staging = pruebas finales antes de salir, Producción = disponible para usuarios reales.',
+  ubicacion_usuarios: '¿Desde dónde accederán los usuarios a tu aplicación? Esto define en qué región de AWS se desplegará.',
+  ia_tipo: '¿Tu aplicación usa inteligencia artificial? Ninguna = no usa IA, APIs externas = usa servicios como ChatGPT, Propia = tienes tu propio modelo de IA.',
+  plazo_compromiso: '¿Cuánto tiempo planeas usar AWS? Sin compromiso = pagas mes a mes. 1 o 3 años = obtienes descuentos a cambio de un compromiso de uso.',
+  presupuesto: '¿Cuánto dinero mensual tienes disponible para pagar los servicios en AWS? Ingresa el valor en dólares (USD).'
+};
+
+const TOOLTIPS_ARQUITECTURA = {
+  patron_despliegue: '¿Cómo se ejecuta tu aplicación? VMs = servidores virtuales tradicionales, Contenedores = más ligeros y portables, Funciones = solo se ejecutan cuando hay peticiones.',
+  usuarios_concurrentes: '¿Cuántas personas usarán tu app al mismo tiempo? Ej: 100 = app interna pequeña, 10.000 = e-commerce activo.',
+  tipo_base_datos: '¿Cómo organizas tus datos? Relacional = tablas como Excel (MySQL, PostgreSQL), NoSQL = documentos flexibles (MongoDB), Mixta = ambas.',
+  volumen_datos_inicial: '¿Cuánta información tendrá tu base de datos al arrancar? Ej: 10 GB = miles de registros, 1 TB = millones de registros.',
+  intensidad_procesamiento: '¿Qué hace tu aplicación principalmente? Ligera = consultas simples y formularios, Media = reportes y procesamiento de archivos, Alta = videos, ML o cálculos complejos.',
+  cumplimiento: '¿Tu aplicación debe cumplir alguna norma de protección de datos? Ninguno = sin requisitos especiales, GDPR = normativa europea de privacidad, HIPAA = datos de salud en EE.UU.',
+  transferencia_mensual: '¿Cuántos datos envía tu app a los usuarios cada mes? Ej: 10 GB = app pequeña, 1 TB = plataforma con muchos archivos o videos.',
+  sla_objetivo: '¿Cuánta disponibilidad necesitas? >99% = puede estar caído máx. 3 días/año, >99.9% = máx. 8 horas/año, >99.99% = máx. 1 hora/año.',
+  almacenamiento_archivos: '¿Cuánto espacio necesitas para guardar archivos como imágenes, documentos o videos? Ej: 10 GB = fotos de perfil, 1 TB = plataforma de videos.'
+};
+
 const ESTILOS_INFO = [
   {
     key: 'monolitica',
@@ -110,10 +131,34 @@ const CAMPOS_ARQUITECTURA = [
   { name: 'almacenamiento_archivos', label: 'Almacenamiento de archivos' }
 ];
 
-function Select({ label, name, value, onChange, options }) {
+function TooltipInfo({ texto }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <span className="tooltip-info-wrapper">
+      <span
+        className="tooltip-info-trigger"
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+      >
+        ?
+      </span>
+      {visible && (
+        <div className="tooltip-info-box">
+          {texto}
+          <div className="tooltip-info-arrow" />
+        </div>
+      )}
+    </span>
+  );
+}
+
+function Select({ label, name, value, onChange, options, tooltip }) {
   return (
     <div className="form-group">
-      <label className="form-label">{label}</label>
+      <label className="form-label">
+        {label}
+        {tooltip && <TooltipInfo texto={tooltip} />}
+      </label>
       <select className="form-select" name={name} value={value} onChange={onChange} required>
         <option value="">Seleccionar...</option>
         {options.map(o => (
@@ -267,9 +312,14 @@ export default function Formulario({ onEstimar, cargando, error }) {
         </div>
 
         <div className="card">
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1E7C3A', marginBottom: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1E7C3A', marginBottom: '0.25rem' }}>
             Para comenzar, selecciona el estilo de arquitectura de tu proyecto:
           </h3>
+          <p style={{ fontSize: '0.85rem', color: '#555', marginBottom: '0.5rem', lineHeight: 1.6 }}>
+            <strong>¿Qué es un estilo de arquitectura?</strong> Es la forma en que está organizado
+            el código y los componentes de tu aplicación. Si no sabes cuál usa tu proyecto,
+            consúltalo con tu equipo de desarrollo.
+          </p>
           <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '1.5rem', fontStyle: 'italic' }}>
             Pasa el mouse por cada opción para ver una descripción.
           </p>
@@ -320,7 +370,7 @@ export default function Formulario({ onEstimar, cargando, error }) {
               name="descripcion"
               value={form.descripcion}
               onChange={handleChange}
-              placeholder="Ej: Plataforma SaaS de gestión empresarial con múltiples módulos independientes..."
+              placeholder="Ej: E-commerce para venta de productos en Latinoamérica..."
               rows={4}
             />
           </div>
@@ -329,13 +379,16 @@ export default function Formulario({ onEstimar, cargando, error }) {
         <div className="card" style={{ marginBottom: '1.5rem' }}>
           <h3 className="seccion-title">Contexto de evaluación</h3>
           <div className="form-grid">
-            <Select label="Horizonte de tiempo" name="horizonte_tiempo" value={form.horizonte_tiempo} onChange={handleChange} options={HORIZONTES} />
-            <Select label="Ambiente" name="ambiente" value={form.ambiente} onChange={handleChange} options={AMBIENTES} />
-            <Select label="Ubicación de usuarios" name="ubicacion_usuarios" value={form.ubicacion_usuarios} onChange={handleChange} options={UBICACIONES} />
-            <Select label="Tipo de IA" name="ia_tipo" value={form.ia_tipo} onChange={handleChange} options={IA_TIPOS} />
-            <Select label="Plazo de compromiso" name="plazo_compromiso" value={form.plazo_compromiso} onChange={handleChange} options={PLAZOS_COMPROMISO} />
+            <Select label="Horizonte de tiempo" name="horizonte_tiempo" value={form.horizonte_tiempo} onChange={handleChange} options={HORIZONTES} tooltip={TOOLTIPS_CONTEXTO.horizonte_tiempo} />
+            <Select label="Ambiente" name="ambiente" value={form.ambiente} onChange={handleChange} options={AMBIENTES} tooltip={TOOLTIPS_CONTEXTO.ambiente} />
+            <Select label="Ubicación de usuarios" name="ubicacion_usuarios" value={form.ubicacion_usuarios} onChange={handleChange} options={UBICACIONES} tooltip={TOOLTIPS_CONTEXTO.ubicacion_usuarios} />
+            <Select label="Tipo de IA" name="ia_tipo" value={form.ia_tipo} onChange={handleChange} options={IA_TIPOS} tooltip={TOOLTIPS_CONTEXTO.ia_tipo} />
+            <Select label="Plazo de compromiso" name="plazo_compromiso" value={form.plazo_compromiso} onChange={handleChange} options={PLAZOS_COMPROMISO} tooltip={TOOLTIPS_CONTEXTO.plazo_compromiso} />
             <div className="form-group">
-              <label className="form-label">Presupuesto disponible (USD)</label>
+              <label className="form-label">
+                Presupuesto disponible (USD)
+                <TooltipInfo texto={TOOLTIPS_CONTEXTO.presupuesto} />
+              </label>
               <input
                 className="form-input"
                 type="number"
@@ -357,7 +410,12 @@ export default function Formulario({ onEstimar, cargando, error }) {
           <div className="form-grid">
             {CAMPOS_ARQUITECTURA.map(campo => (
               <div key={campo.name} className="form-group">
-                <label className="form-label">{campo.label}</label>
+                <label className="form-label">
+                  {campo.label}
+                  {TOOLTIPS_ARQUITECTURA[campo.name] && (
+                    <TooltipInfo texto={TOOLTIPS_ARQUITECTURA[campo.name]} />
+                  )}
+                </label>
                 <input
                   className="form-input"
                   type="text"
