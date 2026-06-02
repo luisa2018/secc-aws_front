@@ -64,58 +64,58 @@ const ESTILOS_INFO = [
 const REFERENCIAS = {
   monolitica: {
     patron_despliegue: 'VMs',
-    usuarios_concurrentes: '100-1K',
+    usuarios_concurrentes: 'Ej: 500 usuarios',
     tipo_base_datos: 'relacional',
-    volumen_datos_inicial: '1-100 GB',
+    volumen_datos_inicial: 'Ej: 50 GB',
     intensidad_procesamiento: 'ligera',
     cumplimiento: 'ninguno',
-    transferencia_mensual: '10-500 GB',
+    transferencia_mensual: 'Ej: 100 GB',
     sla_objetivo: '>99%',
-    almacenamiento_archivos: '<100 GB'
+    almacenamiento_archivos: 'Ej: 80 GB'
   },
   microservicios: {
     patron_despliegue: 'contenedores',
-    usuarios_concurrentes: '1K-10K',
+    usuarios_concurrentes: 'Ej: 5000 usuarios',
     tipo_base_datos: 'mixta',
-    volumen_datos_inicial: '100 GB-10 TB',
+    volumen_datos_inicial: 'Ej: 500 GB',
     intensidad_procesamiento: 'media',
     cumplimiento: 'GDPR',
-    transferencia_mensual: '500 GB-10 TB',
+    transferencia_mensual: 'Ej: 2 TB',
     sla_objetivo: '>99.9%',
-    almacenamiento_archivos: '100 GB-10 TB'
+    almacenamiento_archivos: 'Ej: 1 TB'
   },
   serverless: {
     patron_despliegue: 'funciones',
-    usuarios_concurrentes: '100-1K',
+    usuarios_concurrentes: 'Ej: 300 usuarios',
     tipo_base_datos: 'nosql',
-    volumen_datos_inicial: '1-100 GB',
+    volumen_datos_inicial: 'Ej: 20 GB',
     intensidad_procesamiento: 'ligera',
     cumplimiento: 'ninguno',
-    transferencia_mensual: '10-500 GB',
+    transferencia_mensual: 'Ej: 50 GB',
     sla_objetivo: '>99.9%',
-    almacenamiento_archivos: '<100 GB'
+    almacenamiento_archivos: 'Ej: 50 GB'
   },
   event_driven: {
     patron_despliegue: 'funciones',
-    usuarios_concurrentes: '1K-10K',
+    usuarios_concurrentes: 'Ej: 2000 usuarios',
     tipo_base_datos: 'nosql',
-    volumen_datos_inicial: '100 GB-10 TB',
+    volumen_datos_inicial: 'Ej: 500 GB',
     intensidad_procesamiento: 'media',
     cumplimiento: 'GDPR',
-    transferencia_mensual: '500 GB-10 TB',
+    transferencia_mensual: 'Ej: 1 TB',
     sla_objetivo: '>99.9%',
-    almacenamiento_archivos: '100 GB-10 TB'
+    almacenamiento_archivos: 'Ej: 500 GB'
   },
   hibrida: {
     patron_despliegue: 'mixto',
-    usuarios_concurrentes: '1K-10K',
+    usuarios_concurrentes: 'Ej: 3000 usuarios',
     tipo_base_datos: 'mixta',
-    volumen_datos_inicial: '100 GB-10 TB',
+    volumen_datos_inicial: 'Ej: 2 TB',
     intensidad_procesamiento: 'media',
     cumplimiento: 'GDPR',
-    transferencia_mensual: '500 GB-10 TB',
+    transferencia_mensual: 'Ej: 2 TB',
     sla_objetivo: '>99.9%',
-    almacenamiento_archivos: '100 GB-10 TB'
+    almacenamiento_archivos: 'Ej: 2 TB'
   }
 };
 
