@@ -69,10 +69,6 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
     well_architected, alternativa_menor_costo, analisis_migracion,
     buenas_practicas, limitaciones_estimado, resumen } = informe;
 
-  const riesgoColor = {
-    'Bajo': 'ok', 'Medio': 'warn', 'Alto': 'error'
-  };
-
   const handleDescargarPDF = async () => {
     setDescargando(true);
     setErrorPdf('');
@@ -203,7 +199,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}><strong>Recomendación:</strong> {well_architected?.recomendacion}</p>
       </div>
 
-      {/* Modelo pricing y región — COLAPSABLE */}
+      {/* Modelo pricing, región, motor y licenciamiento — COLAPSABLE */}
       <SeccionColapsable titulo="Modelo de pricing recomendado">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
           <div>
@@ -217,12 +213,53 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
               </div>
             ))}
           </div>
-          <div>
-            <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Región recomendada</p>
-            <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '1rem', marginBottom: '0.75rem' }}>
-              <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209' }}>{region_recomendada?.region}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+            {/* Región */}
+            <div>
+              <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Región recomendada</p>
+              <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '0.5rem' }}>
+                <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209', margin: 0 }}>{region_recomendada?.region}</p>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{region_recomendada?.justificacion}</p>
             </div>
-            <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>{region_recomendada?.justificacion}</p>
+
+            {/* Motor recomendado */}
+            {region_recomendada?.motor_recomendado && (
+              <div>
+                <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Motor de base de datos recomendado</p>
+                <div style={{ background: '#E8F5E9', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '0.5rem' }}>
+                  <p style={{ fontWeight: 700, fontSize: '1rem', color: '#1E7C3A', margin: 0 }}>{region_recomendada?.motor_recomendado}</p>
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{region_recomendada?.justificacion_motor}</p>
+              </div>
+            )}
+
+            {/* Referencia de licenciamiento */}
+            {region_recomendada?.referencia_licenciamiento && (
+              <div>
+                <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>
+                  Referencia de licenciamiento
+                  <span style={{ fontWeight: 400, color: '#999', fontSize: '0.75rem', marginLeft: '6px' }}>— no incluido en el estimado</span>
+                </p>
+                <p style={{ fontSize: '0.75rem', color: '#777', marginBottom: '0.5rem', fontStyle: 'italic' }}>
+                  {region_recomendada.referencia_licenciamiento.nota}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {[
+                    { label: 'SQL Server en RDS', valor: region_recomendada.referencia_licenciamiento.costo_sqlserver_usd },
+                    { label: 'Oracle en RDS', valor: region_recomendada.referencia_licenciamiento.costo_oracle_usd },
+                    { label: 'Windows Server en EC2', valor: region_recomendada.referencia_licenciamiento.costo_windows_server_usd }
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: '#FFF3E0', borderRadius: '6px', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#555' }}>{item.label}</span>
+                      <span style={{ fontWeight: 700, color: '#E65100' }}>+${item.valor?.toLocaleString()} USD/mes</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </SeccionColapsable>
