@@ -171,7 +171,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                   <td style={{ padding: '10px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.servicio_aws}</td>
                   <td style={{ padding: '10px 12px', color: '#555', maxWidth: '200px' }}>{s.configuracion_minima}</td>
                   <td style={{ padding: '10px 12px', color: '#666', maxWidth: '220px' }}>{s.justificacion}</td>
-                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>${s.precio_unitario} / {s.unidad}</td>
+                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>${parseFloat(s.precio_unitario)} / {s.unidad}</td>
                   <td style={{ padding: '10px 12px', fontWeight: 700, color: '#1E7C3A', whiteSpace: 'nowrap' }}>${s.costo_mensual?.toLocaleString()}</td>
                 </tr>
               ))}
@@ -314,6 +314,10 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
             <div>
               <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '4px' }}>Cost Explorer</p>
               <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{buenas_practicas?.cost_explorer}</p>
+            </div>
+            <div>
+              <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '4px' }}>Revisión periódica</p>
+              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{buenas_practicas?.revision_periodica}</p>
             </div>
           </div>
         </div>
