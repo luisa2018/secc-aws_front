@@ -61,11 +61,18 @@ function SeccionTitle({ children }) {
 
 function fmtPrecioUnitario(valor) {
   const v = parseFloat(valor);
-  if (!v) return '$0.00';
-  if (v < 0.001) return `$${(v * 1_000_000).toFixed(2)} / millón`;
-  const str = v.toFixed(4).replace(/\.?0+$/, '');
-  const decimales = str.split('.')[1];
-  return `$${decimales && decimales.length >= 2 ? str : v.toFixed(2)}`;
+  if (!v || isNaN(v)) return '$0.00';
+  if (v >= 0.01) {
+    // Precio normal: mostrar sin ceros innecesarios, mínimo 2 decimales
+    const str = v.toFixed(4).replace(/\.?0+$/, '');
+    const decimales = str.split('.')[1];
+    return `$${decimales && decimales.length >= 2 ? str : v.toFixed(2)}`;
+  }
+  // Precio muy pequeño: mostrar por millón
+  const porMillon = v * 1_000_000;
+  const strM = porMillon.toFixed(4).replace(/\.?0+$/, '');
+  const decM = strM.split('.')[1];
+  return `$${decM && decM.length >= 2 ? strM : porMillon.toFixed(2)} / millón`;
 }
 
 export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
