@@ -59,6 +59,15 @@ function SeccionTitle({ children }) {
   );
 }
 
+function fmtPrecioUnitario(valor) {
+  const v = parseFloat(valor);
+  if (!v) return '$0.00';
+  if (v < 0.001) return `$${(v * 1_000_000).toFixed(2)} / millón`;
+  const str = v.toFixed(4).replace(/\.?0+$/, '');
+  const decimales = str.split('.')[1];
+  return `$${decimales && decimales.length >= 2 ? str : v.toFixed(2)}`;
+}
+
 export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
   const [descargando, setDescargando] = useState(false);
   const [errorPdf, setErrorPdf] = useState('');
@@ -171,7 +180,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                   <td style={{ padding: '10px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.servicio_aws}</td>
                   <td style={{ padding: '10px 12px', color: '#555', maxWidth: '200px' }}>{s.configuracion_minima}</td>
                   <td style={{ padding: '10px 12px', color: '#666', maxWidth: '220px' }}>{s.justificacion}</td>
-                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>${parseFloat(s.precio_unitario)} / {s.unidad}</td>
+                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>{fmtPrecioUnitario(s.precio_unitario)} / {s.unidad}</td>
                   <td style={{ padding: '10px 12px', fontWeight: 700, color: '#1E7C3A', whiteSpace: 'nowrap' }}>${s.costo_mensual?.toLocaleString()}</td>
                 </tr>
               ))}
