@@ -59,22 +59,6 @@ function SeccionTitle({ children }) {
   );
 }
 
-function fmtPrecioUnitario(valor) {
-  const v = parseFloat(valor);
-  if (!v || isNaN(v)) return '$0.00';
-  if (v >= 0.01) {
-    // Precio normal: mostrar sin ceros innecesarios, mínimo 2 decimales
-    const str = v.toFixed(4).replace(/\.?0+$/, '');
-    const decimales = str.split('.')[1];
-    return `$${decimales && decimales.length >= 2 ? str : v.toFixed(2)}`;
-  }
-  // Precio muy pequeño: mostrar por millón
-  const porMillon = v * 1_000_000;
-  const strM = porMillon.toFixed(4).replace(/\.?0+$/, '');
-  const decM = strM.split('.')[1];
-  return `$${decM && decM.length >= 2 ? strM : porMillon.toFixed(2)} / millón`;
-}
-
 export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
   const [descargando, setDescargando] = useState(false);
   const [errorPdf, setErrorPdf] = useState('');
@@ -84,6 +68,8 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
     top_3_servicios, nivel_riesgo, modelo_pricing, region_recomendada,
     well_architected, alternativa_menor_costo, analisis_migracion,
     buenas_practicas, limitaciones_estimado, resumen } = informe;
+
+ 
 
   const handleDescargarPDF = async () => {
     setDescargando(true);
@@ -187,7 +173,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                   <td style={{ padding: '10px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.servicio_aws}</td>
                   <td style={{ padding: '10px 12px', color: '#555', maxWidth: '200px' }}>{s.configuracion_minima}</td>
                   <td style={{ padding: '10px 12px', color: '#666', maxWidth: '220px' }}>{s.justificacion}</td>
-                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>{fmtPrecioUnitario(s.precio_unitario)} / {s.unidad}</td>
+                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>${s.precio_unitario} / {s.unidad}</td>
                   <td style={{ padding: '10px 12px', fontWeight: 700, color: '#1E7C3A', whiteSpace: 'nowrap' }}>${s.costo_mensual?.toLocaleString()}</td>
                 </tr>
               ))}
@@ -215,7 +201,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}><strong>Recomendación:</strong> {well_architected?.recomendacion}</p>
       </div>
 
-      {/* Modelo pricing, región, motor y licenciamiento — COLAPSABLE */}
+      {/* Modelo pricing y región — COLAPSABLE */}
       <SeccionColapsable titulo="Modelo de pricing recomendado">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
           <div>
@@ -229,53 +215,12 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-
-            {/* Región */}
-            <div>
-              <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Región recomendada</p>
-              <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '0.5rem' }}>
-                <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209', margin: 0 }}>{region_recomendada?.region}</p>
-              </div>
-              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{region_recomendada?.justificacion}</p>
+          <div>
+            <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Región recomendada</p>
+            <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '1rem', marginBottom: '0.75rem' }}>
+              <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209' }}>{region_recomendada?.region}</p>
             </div>
-
-            {/* Motor recomendado */}
-            {region_recomendada?.motor_recomendado && (
-              <div>
-                <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>Motor de base de datos recomendado</p>
-                <div style={{ background: '#E8F5E9', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '0.5rem' }}>
-                  <p style={{ fontWeight: 700, fontSize: '1rem', color: '#1E7C3A', margin: 0 }}>{region_recomendada?.motor_recomendado}</p>
-                </div>
-                <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{region_recomendada?.justificacion_motor}</p>
-              </div>
-            )}
-
-            {/* Referencia de licenciamiento */}
-            {region_recomendada?.referencia_licenciamiento && (
-              <div>
-                <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.5rem' }}>
-                  Referencia de licenciamiento
-                  <span style={{ fontWeight: 400, color: '#999', fontSize: '0.75rem', marginLeft: '6px' }}>— no incluido en el estimado</span>
-                </p>
-                <p style={{ fontSize: '0.75rem', color: '#777', marginBottom: '0.5rem', fontStyle: 'italic' }}>
-                  {region_recomendada.referencia_licenciamiento.nota}
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {[
-                    { label: 'SQL Server en RDS', valor: region_recomendada.referencia_licenciamiento.costo_sqlserver_usd },
-                    { label: 'Oracle en RDS', valor: region_recomendada.referencia_licenciamiento.costo_oracle_usd },
-                    { label: 'Windows Server en EC2', valor: region_recomendada.referencia_licenciamiento.costo_windows_server_usd }
-                  ].map((item, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: '#FFF3E0', borderRadius: '6px', fontSize: '0.8rem' }}>
-                      <span style={{ color: '#555' }}>{item.label}</span>
-                      <span style={{ fontWeight: 700, color: '#E65100' }}>+${item.valor?.toLocaleString()} USD/mes</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
+            <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>{region_recomendada?.justificacion}</p>
           </div>
         </div>
       </SeccionColapsable>
@@ -330,10 +275,6 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
             <div>
               <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '4px' }}>Cost Explorer</p>
               <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{buenas_practicas?.cost_explorer}</p>
-            </div>
-            <div>
-              <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '4px' }}>Revisión periódica</p>
-              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{buenas_practicas?.revision_periodica}</p>
             </div>
           </div>
         </div>
