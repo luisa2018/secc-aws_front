@@ -69,8 +69,6 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
     well_architected, alternativa_menor_costo, analisis_migracion,
     buenas_practicas, limitaciones_estimado, resumen } = informe;
 
- 
-
   const handleDescargarPDF = async () => {
     setDescargando(true);
     setErrorPdf('');
@@ -101,6 +99,11 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
       setDescargando(false);
     }
   };
+
+  const refLic = region_recomendada?.referencia_licenciamiento || {};
+  const tieneRefLic = refLic.costo_sqlserver_usd > 0 ||
+                      refLic.costo_oracle_usd > 0 ||
+                      refLic.costo_windows_server_usd > 0;
 
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto' }}>
@@ -134,13 +137,13 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         ))}
       </div>
 
-      {/* Resumen ejecutivo — siempre visible */}
+      {/* Resumen ejecutivo */}
       <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #C8960C' }}>
         <SeccionTitle>Resumen ejecutivo</SeccionTitle>
         <p style={{ fontSize: '0.9rem', color: '#444', lineHeight: 1.7 }}>{resumen}</p>
       </div>
 
-      {/* Top 3 servicios — siempre visible */}
+      {/* Top 3 servicios */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
         <SeccionTitle>Top 3 servicios de mayor costo</SeccionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
@@ -182,7 +185,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         </div>
       </SeccionColapsable>
 
-      {/* Well-Architected — siempre visible */}
+      {/* Well-Architected */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
         <SeccionTitle>AWS Well-Architected — Optimización de costos</SeccionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
@@ -220,12 +223,51 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
             <div style={{ background: '#FFF8E1', borderRadius: '10px', padding: '1rem', marginBottom: '0.75rem' }}>
               <p style={{ fontWeight: 700, fontSize: '1rem', color: '#9A7209' }}>{region_recomendada?.region}</p>
             </div>
-            <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>{region_recomendada?.justificacion}</p>
+            <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6, marginBottom: '1rem' }}>{region_recomendada?.justificacion}</p>
+
+            {/* Motor de base de datos */}
+            {region_recomendada?.motor_recomendado && region_recomendada.motor_recomendado !== 'N/A' && (
+              <div style={{ marginBottom: '1rem' }}>
+                <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#1E7C3A', marginBottom: '0.4rem' }}>Motor de base de datos recomendado</p>
+                <div style={{ background: '#E8F5E9', borderRadius: '8px', padding: '0.75rem' }}>
+                  <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1E7C3A', marginBottom: '4px' }}>{region_recomendada.motor_recomendado}</p>
+                  <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.5 }}>{region_recomendada.justificacion_motor}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Referencia de licenciamiento */}
+            {tieneRefLic && (
+              <div>
+                <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.4rem' }}>Referencia de licenciamiento</p>
+                <p style={{ fontSize: '0.75rem', color: '#888', fontStyle: 'italic', marginBottom: '0.5rem' }}>{refLic.nota}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {refLic.costo_sqlserver_usd > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#555' }}>SQL Server en RDS</span>
+                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_sqlserver_usd?.toLocaleString()} USD/mes</span>
+                    </div>
+                  )}
+                  {refLic.costo_oracle_usd > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#555' }}>Oracle en RDS</span>
+                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_oracle_usd?.toLocaleString()} USD/mes</span>
+                    </div>
+                  )}
+                  {refLic.costo_windows_server_usd > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#555' }}>Windows Server en EC2</span>
+                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_windows_server_usd?.toLocaleString()} USD/mes</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </SeccionColapsable>
 
-      {/* Alternativa menor costo — siempre visible */}
+      {/* Alternativa menor costo */}
       {alternativa_menor_costo?.aplica && (
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1E7C3A' }}>
           <SeccionTitle>Alternativa de menor costo</SeccionTitle>
@@ -234,7 +276,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         </div>
       )}
 
-      {/* Análisis de migración — siempre visible */}
+      {/* Análisis de migración */}
       {analisis_migracion?.aplica && (
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1565C0' }}>
           <SeccionTitle>Análisis de migración</SeccionTitle>
