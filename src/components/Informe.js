@@ -170,23 +170,27 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', tableLayout: 'fixed' }}>
             <colgroup>
-              <col style={{ width: '28%' }} />
-              <col style={{ width: '27%' }} />
-              <col style={{ width: '15%' }} />
-              <col style={{ width: '10%' }} />
+              <col style={{ width: '32%' }} />
+              <col style={{ width: '30%' }} />
               <col style={{ width: '20%' }} />
+              <col style={{ width: '18%' }} />
             </colgroup>
             <thead>
               <tr style={{ background: '#FFF8E1' }}>
-                {['Servicio', 'Configuración mínima', 'Precio unitario', 'Unidad', 'Costo mensual'].map(h => (
-                  <th key={h} style={{
+                {[
+                  { label: 'Servicio', align: 'left' },
+                  { label: 'Configuración mínima', align: 'left' },
+                  { label: 'Precio unitario', align: 'right' },
+                  { label: 'Costo mensual', align: 'right' },
+                ].map(h => (
+                  <th key={h.label} style={{
                     padding: '10px 12px',
-                    textAlign: h === 'Precio unitario' || h === 'Costo mensual' ? 'right' : h === 'Unidad' ? 'center' : 'left',
+                    textAlign: h.align,
                     color: '#9A7209',
                     fontWeight: 600,
                     borderBottom: '2px solid #F0B429',
                     whiteSpace: 'nowrap'
-                  }}>{h}</th>
+                  }}>{h.label}</th>
                 ))}
               </tr>
             </thead>
@@ -197,14 +201,14 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                     <p style={{ fontWeight: 600, fontSize: '0.85rem', margin: 0, color: '#1A1A1A' }}>{s.servicio_aws}</p>
                     <p style={{ fontSize: '0.75rem', color: '#777', margin: '4px 0 0', lineHeight: 1.4 }}>{s.justificacion}</p>
                   </td>
-                  <td style={{ padding: '12px 12px', fontSize: '0.8rem', color: '#555' }}>{s.configuracion_minima}</td>
-                  <td style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 600, whiteSpace: 'nowrap', color: '#1A1A1A' }}>
-                    {formatPrecio(s.precio_unitario)}
+                  <td style={{ padding: '12px 12px', fontSize: '0.8rem', color: '#555', verticalAlign: 'top' }}>
+                    {s.configuracion_minima}
                   </td>
-                  <td style={{ padding: '12px 12px', textAlign: 'center', fontSize: '0.75rem', color: '#777', whiteSpace: 'nowrap' }}>
-                    {s.unidad}
+                  <td style={{ padding: '12px 12px', textAlign: 'right', verticalAlign: 'top', color: '#1A1A1A', fontWeight: 600, fontSize: '0.82rem' }}>
+                    <span style={{ display: 'block' }}>{formatPrecio(s.precio_unitario)}</span>
+                    <span style={{ fontSize: '0.72rem', color: '#777', fontWeight: 400 }}>{s.unidad}</span>
                   </td>
-                  <td style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 700, color: '#1E7C3A', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 700, color: '#1E7C3A', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
                     ${s.costo_mensual?.toLocaleString()}
                   </td>
                 </tr>
@@ -212,10 +216,10 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
             </tbody>
             <tfoot>
               <tr style={{ background: '#FFF8E1', borderTop: '2px solid #F0B429' }}>
-                <td colSpan={4} style={{ padding: '10px 12px', fontWeight: 700, color: '#9A7209', fontSize: '0.85rem' }}>
+                <td colSpan={3} style={{ padding: '10px 12px', fontWeight: 700, color: '#9A7209', fontSize: '0.85rem', textAlign: 'right' }}>
                   Total mensual
                 </td>
-                <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: '#1A1A1A' }}>
+                <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: '#1A1A1A', whiteSpace: 'nowrap' }}>
                   ${costo_estimado?.costo_mensual?.toLocaleString()} USD
                 </td>
               </tr>
