@@ -105,6 +105,12 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                       refLic.costo_oracle_usd > 0 ||
                       refLic.costo_windows_server_usd > 0;
 
+  const formatPrecio = (precio) => {
+    if (!precio && precio !== 0) return '$0.00';
+    if (precio < 0.01) return `$${precio.toFixed(4)}`;
+    return `$${precio.toFixed(2)}`;
+  };
+
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto' }}>
 
@@ -162,25 +168,58 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
       {/* Servicios propuestos — COLAPSABLE */}
       <SeccionColapsable titulo={`Servicios propuestos (${servicios?.length} servicios)`}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: '28%' }} />
+              <col style={{ width: '27%' }} />
+              <col style={{ width: '15%' }} />
+              <col style={{ width: '10%' }} />
+              <col style={{ width: '20%' }} />
+            </colgroup>
             <thead>
               <tr style={{ background: '#FFF8E1' }}>
-                {['Servicio', 'Configuración mínima', 'Justificación', 'Precio unitario', 'Costo mensual'].map(h => (
-                  <th key={h} style={{ padding: '10px 12px', textAlign: 'left', color: '#9A7209', fontWeight: 600, borderBottom: '2px solid #F0B429', whiteSpace: 'nowrap' }}>{h}</th>
+                {['Servicio', 'Configuración mínima', 'Precio unitario', 'Unidad', 'Costo mensual'].map(h => (
+                  <th key={h} style={{
+                    padding: '10px 12px',
+                    textAlign: h === 'Precio unitario' || h === 'Costo mensual' ? 'right' : h === 'Unidad' ? 'center' : 'left',
+                    color: '#9A7209',
+                    fontWeight: 600,
+                    borderBottom: '2px solid #F0B429',
+                    whiteSpace: 'nowrap'
+                  }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {servicios?.map((s, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid #EEE', background: i % 2 === 0 ? '#FAFAFA' : '#FFF' }}>
-                  <td style={{ padding: '10px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.servicio_aws}</td>
-                  <td style={{ padding: '10px 12px', color: '#555', maxWidth: '200px' }}>{s.configuracion_minima}</td>
-                  <td style={{ padding: '10px 12px', color: '#666', maxWidth: '220px' }}>{s.justificacion}</td>
-                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>${s.precio_unitario} / {s.unidad}</td>
-                  <td style={{ padding: '10px 12px', fontWeight: 700, color: '#1E7C3A', whiteSpace: 'nowrap' }}>${s.costo_mensual?.toLocaleString()}</td>
+                  <td style={{ padding: '12px 12px' }}>
+                    <p style={{ fontWeight: 600, fontSize: '0.85rem', margin: 0, color: '#1A1A1A' }}>{s.servicio_aws}</p>
+                    <p style={{ fontSize: '0.75rem', color: '#777', margin: '4px 0 0', lineHeight: 1.4 }}>{s.justificacion}</p>
+                  </td>
+                  <td style={{ padding: '12px 12px', fontSize: '0.8rem', color: '#555' }}>{s.configuracion_minima}</td>
+                  <td style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 600, whiteSpace: 'nowrap', color: '#1A1A1A' }}>
+                    {formatPrecio(s.precio_unitario)}
+                  </td>
+                  <td style={{ padding: '12px 12px', textAlign: 'center', fontSize: '0.75rem', color: '#777', whiteSpace: 'nowrap' }}>
+                    {s.unidad}
+                  </td>
+                  <td style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 700, color: '#1E7C3A', whiteSpace: 'nowrap' }}>
+                    ${s.costo_mensual?.toLocaleString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr style={{ background: '#FFF8E1', borderTop: '2px solid #F0B429' }}>
+                <td colSpan={4} style={{ padding: '10px 12px', fontWeight: 700, color: '#9A7209', fontSize: '0.85rem' }}>
+                  Total mensual
+                </td>
+                <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: '#1A1A1A' }}>
+                  ${costo_estimado?.costo_mensual?.toLocaleString()} USD
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </SeccionColapsable>
@@ -225,7 +264,6 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
             </div>
             <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6, marginBottom: '1rem' }}>{region_recomendada?.justificacion}</p>
 
-            {/* Motor de base de datos */}
             {region_recomendada?.motor_recomendado && region_recomendada.motor_recomendado !== 'N/A' && (
               <div style={{ marginBottom: '1rem' }}>
                 <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#1E7C3A', marginBottom: '0.4rem' }}>Motor de base de datos recomendado</p>
@@ -236,7 +274,6 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
               </div>
             )}
 
-            {/* Referencia de licenciamiento */}
             {tieneRefLic && (
               <div>
                 <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#9A7209', marginBottom: '0.4rem' }}>Referencia de licenciamiento</p>
@@ -272,7 +309,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1E7C3A' }}>
           <SeccionTitle>Alternativa de menor costo</SeccionTitle>
           <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6, marginBottom: '0.5rem' }}>{alternativa_menor_costo?.descripcion}</p>
-          <p style={{ fontWeight: 700, color: '#1E7C3A' }}>Ahorro estimado: ${alternativa_menor_costo?.ahorro_estimado?.toLocaleString()} USD/mes</p>
+          <p style={{ fontWeight: 700, color: '#1E7C3A' }}>Ahorro estimado: ${alternativa_menor_costo?.ahorro_estimado?.toLocaleString()} USD</p>
         </div>
       )}
 
