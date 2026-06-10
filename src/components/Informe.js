@@ -66,8 +66,8 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
 
   const { metadata, servicios, costo_estimado, evaluacion_presupuesto,
     top_3_servicios, nivel_riesgo, modelo_pricing, region_recomendada,
-    well_architected, alternativa_menor_costo, analisis_migracion,
-    buenas_practicas, limitaciones_estimado, resumen } = informe;
+    well_architected, alternativa_menor_costo, buenas_practicas, 
+    limitaciones_estimado, resumen } = informe;
 
   const handleDescargarPDF = async () => {
     setDescargando(true);
@@ -316,7 +316,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
           <p style={{ fontWeight: 700, color: '#1E7C3A' }}>Ahorro estimado: ${alternativa_menor_costo?.ahorro_estimado?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</p>
         </div>
       )}
-      
+
       {/* Buenas prácticas — COLAPSABLE */}
       <SeccionColapsable titulo="Buenas prácticas de gestión de costos">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
