@@ -13,7 +13,7 @@ const TOOLTIPS_CONTEXTO = {
   ubicacion_usuarios: '¿Desde dónde accederán los usuarios a tu aplicación? Esto define en qué región de AWS se desplegará.',
   ia_tipo: '¿Tu aplicación usa inteligencia artificial? Ninguna = no usa IA, APIs externas = usa servicios como ChatGPT, Propia = tienes tu propio modelo de IA.',
   plazo_compromiso: '¿Cuánto tiempo planeas usar AWS? Sin compromiso = pagas mes a mes. 1 o 3 años = obtienes descuentos a cambio de un compromiso de uso.',
-  presupuesto: '¿Cuánto dinero mensual tienes disponible para pagar los servicios en AWS? Ingresa el valor en dólares (USD).'
+  presupuesto: '¿Cuánto dinero tienes disponible para pagar los servicios en AWS según el horizonte de tiempo elegido? Ingresa el valor en dólares (USD).'
 };
 
 const TOOLTIPS_ARQUITECTURA = {
@@ -63,58 +63,58 @@ const ESTILOS_INFO = [
 
 const REFERENCIAS = {
   monolitica: {
-    patron_despliegue: 'VMs',
+    patron_despliegue: 'Ej: VMs',
     usuarios_concurrentes: 'Ej: 500 usuarios',
-    tipo_base_datos: 'relacional',
+    tipo_base_datos: 'Ej: relacional',
     volumen_datos_inicial: 'Ej: 50 GB',
-    intensidad_procesamiento: 'ligera',
-    cumplimiento: 'ninguno',
+    intensidad_procesamiento: 'Ej: ligera',
+    cumplimiento: 'Ej: ninguno',
     transferencia_mensual: 'Ej: 100 GB',
-    sla_objetivo: '>99%',
+    sla_objetivo: 'Ej: >99%',
     almacenamiento_archivos: 'Ej: 80 GB'
   },
   microservicios: {
-    patron_despliegue: 'contenedores',
+    patron_despliegue: 'Ej: contenedores',
     usuarios_concurrentes: 'Ej: 5000 usuarios',
-    tipo_base_datos: 'mixta',
+    tipo_base_datos: 'Ej: mixta',
     volumen_datos_inicial: 'Ej: 500 GB',
-    intensidad_procesamiento: 'media',
-    cumplimiento: 'GDPR',
+    intensidad_procesamiento: 'Ej: media',
+    cumplimiento: 'Ej: GDPR',
     transferencia_mensual: 'Ej: 2 TB',
-    sla_objetivo: '>99.9%',
+    sla_objetivo: 'Ej: >99.9%',
     almacenamiento_archivos: 'Ej: 1 TB'
   },
   serverless: {
-    patron_despliegue: 'funciones',
+    patron_despliegue: 'Ej: funciones',
     usuarios_concurrentes: 'Ej: 300 usuarios',
-    tipo_base_datos: 'nosql',
+    tipo_base_datos: 'Ej: nosql',
     volumen_datos_inicial: 'Ej: 20 GB',
-    intensidad_procesamiento: 'ligera',
-    cumplimiento: 'ninguno',
+    intensidad_procesamiento: 'Ej: ligera',
+    cumplimiento: 'Ej: ninguno',
     transferencia_mensual: 'Ej: 50 GB',
-    sla_objetivo: '>99.9%',
+    sla_objetivo: 'Ej: >99.9%',
     almacenamiento_archivos: 'Ej: 50 GB'
   },
   event_driven: {
-    patron_despliegue: 'funciones',
+    patron_despliegue: 'Ej: funciones',
     usuarios_concurrentes: 'Ej: 2000 usuarios',
-    tipo_base_datos: 'nosql',
+    tipo_base_datos: 'Ej: nosql',
     volumen_datos_inicial: 'Ej: 500 GB',
-    intensidad_procesamiento: 'media',
-    cumplimiento: 'GDPR',
+    intensidad_procesamiento: 'Ej: media',
+    cumplimiento: 'Ej: GDPR',
     transferencia_mensual: 'Ej: 1 TB',
-    sla_objetivo: '>99.9%',
+    sla_objetivo: 'Ej: >99.9%',
     almacenamiento_archivos: 'Ej: 500 GB'
   },
   hibrida: {
-    patron_despliegue: 'mixto',
+    patron_despliegue: 'Ej: mixto',
     usuarios_concurrentes: 'Ej: 3000 usuarios',
-    tipo_base_datos: 'mixta',
+    tipo_base_datos: 'Ej: mixta',
     volumen_datos_inicial: 'Ej: 2 TB',
-    intensidad_procesamiento: 'media',
-    cumplimiento: 'GDPR',
+    intensidad_procesamiento: 'Ej: media',
+    cumplimiento: 'Ej: GDPR',
     transferencia_mensual: 'Ej: 2 TB',
-    sla_objetivo: '>99.9%',
+    sla_objetivo: 'Ej: >99.9%',
     almacenamiento_archivos: 'Ej: 2 TB'
   }
 };
@@ -192,18 +192,11 @@ function TarjetaEstilo({ info, seleccionado, onSeleccionar }) {
       onMouseLeave={() => setTooltip(false)}
     >
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.6rem' }}>
-        <Icono
-          size={36}
-          color={seleccionado ? '#1E7C3A' : '#9A7209'}
-          strokeWidth={1.5}
-        />
+        <Icono size={36} color={seleccionado ? '#1E7C3A' : '#9A7209'} strokeWidth={1.5} />
       </div>
-      <div style={{
-        fontWeight: 700,
-        fontSize: '0.95rem',
-        color: seleccionado ? '#1E7C3A' : '#333'
-      }}>{info.label}</div>
-
+      <div style={{ fontWeight: 700, fontSize: '0.95rem', color: seleccionado ? '#1E7C3A' : '#333' }}>
+        {info.label}
+      </div>
       {tooltip && (
         <div className="tooltip">
           {info.tooltip}
@@ -263,7 +256,19 @@ export default function Formulario({ onEstimar, cargando, error }) {
   };
 
   const handleSeleccionarEstilo = (estilo) => {
-    setForm(prev => ({ ...prev, estilo_arquitectura: estilo }));
+    setForm(prev => ({
+      ...prev,
+      estilo_arquitectura: estilo,
+      patron_despliegue: '',
+      usuarios_concurrentes: '',
+      tipo_base_datos: '',
+      volumen_datos_inicial: '',
+      intensidad_procesamiento: '',
+      cumplimiento: '',
+      transferencia_mensual: '',
+      sla_objetivo: '',
+      almacenamiento_archivos: ''
+    }));
     setPantalla('formulario');
   };
 
@@ -306,8 +311,16 @@ export default function Formulario({ onEstimar, cargando, error }) {
           <p style={{ fontSize: '1rem', color: '#333', fontWeight: 700, lineHeight: 1.7, maxWidth: '640px', margin: '0 auto' }}>
             SECC-AWS analiza escenarios de arquitectura mediante parámetros comunes para proponer
             una posible implementación en AWS. Genera evaluación de costos y recomendaciones
-            orientadas al Well-Architected Framework, teniendo en cuenta que se trata de una
-            evaluación pre-despliegue.
+            orientadas al{' '}
+            <a
+              href="https://aws.amazon.com/architecture/well-architected/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#1E7C3A', fontWeight: 700 }}
+            >
+              Well-Architected Framework
+            </a>
+            , teniendo en cuenta que se trata de una evaluación pre-despliegue.
           </p>
         </div>
 
@@ -320,8 +333,13 @@ export default function Formulario({ onEstimar, cargando, error }) {
             el código y los componentes de tu aplicación. Si no sabes cuál usa tu proyecto,
             consúltalo con tu equipo de desarrollo.
           </p>
-          <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '1.5rem', fontStyle: 'italic' }}>
+          <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '0.5rem', fontStyle: 'italic' }}>
             Pasa el mouse por cada opción para ver una descripción.
+          </p>
+          <p style={{ fontSize: '0.85rem', color: '#555', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            💡 Algunas arquitecturas combinan elementos de más de un estilo.
+            Elige el <strong>estilo dominante</strong> de tu proyecto, es decir,
+            el que mejor describe cómo está organizada la mayor parte de tu sistema.
           </p>
           <div style={{
             display: 'grid',
@@ -390,7 +408,7 @@ export default function Formulario({ onEstimar, cargando, error }) {
             <Select label="Plazo de Compromiso" name="plazo_compromiso" value={form.plazo_compromiso} onChange={handleChange} options={PLAZOS_COMPROMISO} tooltip={TOOLTIPS_CONTEXTO.plazo_compromiso} />
             <div className="form-group">
               <label className="form-label">
-                Presupuesto Disponible (USD)
+                Presupuesto Disponible (USD) — para el horizonte elegido
                 <TooltipInfo texto={TOOLTIPS_CONTEXTO.presupuesto} />
               </label>
               <input

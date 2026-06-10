@@ -102,8 +102,8 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
 
   const refLic = region_recomendada?.referencia_licenciamiento || {};
   const tieneRefLic = refLic.costo_sqlserver_usd > 0 ||
-                      refLic.costo_oracle_usd > 0 ||
-                      refLic.costo_windows_server_usd > 0;
+    refLic.costo_oracle_usd > 0 ||
+    refLic.costo_windows_server_usd > 0;
 
   const formatPrecio = (precio) => {
     if (!precio && precio !== 0) return '$0.00';
@@ -129,8 +129,8 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
       {/* Métricas principales */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         {[
-          { label: 'Costo mensual', valor: `$${costo_estimado?.costo_mensual?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD` },
-          { label: 'Costo al horizonte', valor: `$${costo_estimado?.costo_horizonte?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD` },
+          { label: 'Costo mensual', valor: `$${costo_estimado?.costo_mensual?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD` },
+          { label: 'Costo al horizonte', valor: `$${costo_estimado?.costo_horizonte?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD` },
           { label: 'Periodo', valor: costo_estimado?.periodo },
           { label: '% del presupuesto', valor: `${evaluacion_presupuesto?.porcentaje_del_presupuesto?.toFixed(1)}%` },
           { label: 'Estado', valor: evaluacion_presupuesto?.dentro_presupuesto ? '✅ Dentro' : '❌ Excede' },
@@ -158,7 +158,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
               <p style={{ fontSize: '0.75rem', color: '#9A7209', fontWeight: 600 }}>#{i + 1}</p>
               <p style={{ fontWeight: 700, fontSize: '1rem', margin: '4px 0' }}>{s.servicio_aws}</p>
               <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '6px' }}>{s.configuracion_minima}</p>
-              <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1E7C3A' }}>${s.costo_mensual?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mes</p>
+              <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1E7C3A' }}>${s.costo_mensual?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mes</p>
               <p style={{ fontSize: '0.8rem', color: '#888' }}>{s.porcentaje_del_total?.toFixed(1)}% del total</p>
             </div>
           ))}
@@ -209,7 +209,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                     <span style={{ fontSize: '0.72rem', color: '#777', fontWeight: 400 }}>{s.unidad}</span>
                   </td>
                   <td style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 700, color: '#1E7C3A', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
-                    ${s.costo_mensual?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    ${s.costo_mensual?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>
               ))}
@@ -220,7 +220,7 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                   Total mensual
                 </td>
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: '#1A1A1A', whiteSpace: 'nowrap' }}>
-                  ${costo_estimado?.costo_mensual?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD
+                  ${costo_estimado?.costo_mensual?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
                 </td>
               </tr>
             </tfoot>
@@ -233,9 +233,9 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         <SeccionTitle>AWS Well-Architected — Optimización de costos</SeccionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
           {[
-            { label: 'Costo actual', valor: `$${costo_estimado?.costo_mensual?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes` },
-            { label: 'Costo optimizado', valor: `$${(costo_estimado?.costo_mensual - well_architected?.ahorro_estimado_usd)?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes` },
-            { label: 'Ahorro estimado', valor: `$${well_architected?.ahorro_estimado_usd?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes`, verde: true }
+            { label: 'Costo actual', valor: `$${costo_estimado?.costo_mensual?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD/mes` },
+            { label: 'Costo optimizado', valor: `$${(costo_estimado?.costo_mensual - well_architected?.ahorro_estimado_usd)?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD/mes` },
+            { label: 'Ahorro estimado', valor: `$${well_architected?.ahorro_estimado_usd?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD/mes`, verde: true }
           ].map((m, i) => (
             <div key={i} style={{ background: m.verde ? '#E8F5E9' : '#F5F5F5', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
               <p style={{ fontSize: '0.75rem', color: '#777', marginBottom: '4px' }}>{m.label}</p>
@@ -286,19 +286,19 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
                   {refLic.costo_sqlserver_usd > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
                       <span style={{ color: '#555' }}>SQL Server en RDS</span>
-                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_sqlserver_usd?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes</span>
+                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_sqlserver_usd?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD/mes</span>
                     </div>
                   )}
                   {refLic.costo_oracle_usd > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
                       <span style={{ color: '#555' }}>Oracle en RDS</span>
-                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_oracle_usd?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes</span>
+                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_oracle_usd?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD/mes</span>
                     </div>
                   )}
                   {refLic.costo_windows_server_usd > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
                       <span style={{ color: '#555' }}>Windows Server en EC2</span>
-                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_windows_server_usd?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes</span>
+                      <span style={{ fontWeight: 700, color: '#C62828' }}>+${refLic.costo_windows_server_usd?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD/mes</span>
                     </div>
                   )}
                 </div>
@@ -313,29 +313,10 @@ export default function Informe({ informe, onNuevaEstimacion, reportUrl }) {
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1E7C3A' }}>
           <SeccionTitle>Alternativa de menor costo</SeccionTitle>
           <p style={{ fontSize: '0.85rem', color: '#555', lineHeight: 1.6, marginBottom: '0.5rem' }}>{alternativa_menor_costo?.descripcion}</p>
-          <p style={{ fontWeight: 700, color: '#1E7C3A' }}>Ahorro estimado: ${alternativa_menor_costo?.ahorro_estimado?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</p>
+          <p style={{ fontWeight: 700, color: '#1E7C3A' }}>Ahorro estimado: ${alternativa_menor_costo?.ahorro_estimado?.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</p>
         </div>
       )}
-
-      {/* Análisis de migración */}
-      {analisis_migracion?.aplica && (
-        <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #1565C0' }}>
-          <SeccionTitle>Análisis de migración</SeccionTitle>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-            {[
-              { label: 'Costo actual (on-premise)', valor: `$${analisis_migracion?.costo_actual_estimado_usd?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes` },
-              { label: 'Ahorro mensual estimado', valor: `$${analisis_migracion?.ahorro_mensual_estimado_usd?.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD/mes` },
-              { label: 'Período de retorno', valor: analisis_migracion?.periodo_retorno_inversion }
-            ].map((m, i) => (
-              <div key={i} style={{ background: '#E3F2FD', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
-                <p style={{ fontSize: '0.75rem', color: '#1565C0', marginBottom: '4px' }}>{m.label}</p>
-                <p style={{ fontWeight: 700, color: '#1A1A1A' }}>{m.valor}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
+      
       {/* Buenas prácticas — COLAPSABLE */}
       <SeccionColapsable titulo="Buenas prácticas de gestión de costos">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
